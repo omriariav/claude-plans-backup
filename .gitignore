@@ -1,0 +1,13 @@
+# Never commit backup tarballs — they contain transcripts/memory (confidential),
+# even after credential sanitization.
+*.tar.gz
+claude-backup-*
+
+# Unpacked sanitized artifacts, if a backup is ever extracted inside the repo
+sanitized-settings.json
+sanitized-claude.json
+RESTORE.md
+MANIFEST.txt
+restore-claude.sh
+
+.DS_Store
