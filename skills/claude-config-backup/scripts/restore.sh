@@ -107,7 +107,7 @@ fi
 echo ""
 
 if [ -n "$MCPS_S" ] && ask_yn "Merge mcpServers from backup into ~/.claude/settings.json?" Y; then
-  mkdir -p "$HOME/.claude"
+  [ "$DRY_RUN" -eq 0 ] && mkdir -p "$HOME/.claude"   # don't create dirs in preview mode
   if [ -f "$CURRENT" ]; then
     TMP=$(mktemp)
     jq -s '.[0].mcpServers = ((.[0].mcpServers // {}) * (.[1].mcpServers // {})) | .[0]' "$CURRENT" "$SANITIZED" > "$TMP"
