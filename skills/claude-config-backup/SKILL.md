@@ -58,9 +58,12 @@ Same flags: `--dry-run` / `--yes`.
 - `~/.tmux.conf`, `~/.tmux/scripts/`
 
 **Default-on (declinable):**
-- `~/.claude/projects/**` — transcripts (`claude --resume`) + auto-memory
+- `~/.claude/projects/**/memory/` — auto-memory (persistent memory store; small)
 
-**Optional (default off):**
+**Opt-in (default off):**
+- `~/.claude/projects/**/*.jsonl` — conversation transcripts (`claude --resume`
+  history). Off by default: they are the bulk of the archive and resume only
+  surfaces them when the new machine's working-directory paths match (see RESTORE.md).
 - `~/.codex/config.toml`, `~/.cursor/mcp.json`, `~/.config/multi-sql-mcp/config.toml`
 
 **Never included:**
