@@ -4,17 +4,23 @@ A hardened Claude Code config backup/restore skill. Built to migrate a Claude Co
 setup between accounts/machines — e.g. a personal **$200 Max** plan → a managed
 **Enterprise** account — without losing customizations.
 
-It avoids the usual pitfalls of a naïve `tar` of `~/.claude`:
+## How it works
 
-| Property | Naïve backup | This skill |
-|----------|--------------|------------|
-| `~/.claude/CLAUDE.md`, `~/.claude/agents/`, `~/.claude/hooks/` | silently dropped | backed up (hooks re-chmod'd on restore) |
-| Credential stripping | key-name only | key-name **+ value-pattern** (`sk-ant-`, JWTs, `ghp_`, `AKIA`, PEM, …) |
-| `~/.claude.json` restore | wholesale copy, default ON (clobbers new account identity) | **default OFF**, with warning |
-
-Also: `restore.sh` runs commands from explicit args (no `eval`), and the repo
-`.gitignore` blocks committing tarballs (which hold confidential config/memory, and
-transcripts if you opt in).
+- **Captures the whole setup, including the easy-to-miss pieces.** Settings, skills,
+  commands, agents, hooks, global `CLAUDE.md`, keybindings, and tmux config — with
+  `agents/`, `hooks/`, and `CLAUDE.md` explicitly included and hook scripts re-`chmod`'d
+  on restore.
+- **Strips credentials two ways.** Removes secret-*named* keys **and** redacts
+  secret-*shaped* values (`sk-ant-`, JWTs, `ghp_`, `AKIA`, PEM) from `settings.json`
+  and `~/.claude.json`. `.credentials.json` is never included.
+- **Restores without clobbering.** Merges only `mcpServers` into the target
+  `settings.json` (backing the original up first), so it leaves an account's managed
+  settings intact. `~/.claude.json` is touched only if you explicitly opt in.
+- **Previews before it acts.** Restore prints its full plan and changes nothing until
+  you pass `--apply`.
+- **Safe by construction.** Restore runs commands from explicit args (no `eval`), the
+  tarball is written `0600`, and `.gitignore` keeps it (confidential config/memory, and
+  transcripts if you opt in) out of version control.
 
 ## Install (make it an active skill)
 

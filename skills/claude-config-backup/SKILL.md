@@ -6,9 +6,9 @@ description: Back up OR restore the user's entire Claude Code config (~/.claude/
 # claude-config-backup
 
 One skill, two scripts. Back up on the old machine/account, restore on the new one.
-Captures the three things a naïve backup silently drops (`CLAUDE.md`, `agents/`,
-`hooks/`), adds value-based secret redaction, and defuses the `~/.claude.json`
-clobber on restore.
+Captures the easy-to-miss pieces (`CLAUDE.md`, `agents/`, `hooks/`), redacts secrets
+by both key name and value pattern, and keeps restore non-destructive — it previews
+first and leaves `~/.claude.json` alone unless you opt in.
 
 ## Mode 1: Backup
 
