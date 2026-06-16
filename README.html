@@ -101,40 +101,33 @@
 a Claude Code setup between accounts/machines — e.g. a personal
 <strong>$200 Max</strong> plan → a managed <strong>Enterprise</strong>
 account — without losing customizations.</p>
-<p>It avoids the usual pitfalls of a naïve <code>tar</code> of
-<code>~/.claude</code>:</p>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Naïve backup</th>
-<th>This skill</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>~/.claude/CLAUDE.md</code>, <code>~/.claude/agents/</code>,
-<code>~/.claude/hooks/</code></td>
-<td>silently dropped</td>
-<td>backed up (hooks re-chmod'd on restore)</td>
-</tr>
-<tr>
-<td>Credential stripping</td>
-<td>key-name only</td>
-<td>key-name <strong>+ value-pattern</strong> (<code>sk-ant-</code>,
-JWTs, <code>ghp_</code>, <code>AKIA</code>, PEM, …)</td>
-</tr>
-<tr>
-<td><code>~/.claude.json</code> restore</td>
-<td>wholesale copy, default ON (clobbers new account identity)</td>
-<td><strong>default OFF</strong>, with warning</td>
-</tr>
-</tbody>
-</table>
-<p>Also: <code>restore.sh</code> runs commands from explicit args (no
-<code>eval</code>), and the repo <code>.gitignore</code> blocks
-committing tarballs (which hold confidential config/memory, and
-transcripts if you opt in).</p>
+<h2 id="how-it-works">How it works</h2>
+<ul>
+<li><strong>Captures the whole setup, including the easy-to-miss
+pieces.</strong> Settings, skills, commands, agents, hooks, global
+<code>CLAUDE.md</code>, keybindings, and tmux config — with
+<code>agents/</code>, <code>hooks/</code>, and <code>CLAUDE.md</code>
+explicitly included and hook scripts re-<code>chmod</code>'d on
+restore.</li>
+<li><strong>Strips credentials two ways.</strong> Removes
+secret-<em>named</em> keys <strong>and</strong> redacts
+secret-<em>shaped</em> values (<code>sk-ant-</code>, JWTs,
+<code>ghp_</code>, <code>AKIA</code>, PEM) from
+<code>settings.json</code> and <code>~/.claude.json</code>.
+<code>.credentials.json</code> is never included.</li>
+<li><strong>Restores without clobbering.</strong> Merges only
+<code>mcpServers</code> into the target <code>settings.json</code>
+(backing the original up first), so it leaves an account's managed
+settings intact. <code>~/.claude.json</code> is touched only if you
+explicitly opt in.</li>
+<li><strong>Previews before it acts.</strong> Restore prints its full
+plan and changes nothing until you pass <code>--apply</code>.</li>
+<li><strong>Safe by construction.</strong> Restore runs commands from
+explicit args (no <code>eval</code>), the tarball is written
+<code>0600</code>, and <code>.gitignore</code> keeps it (confidential
+config/memory, and transcripts if you opt in) out of version
+control.</li>
+</ul>
 <h2 id="install-make-it-an-active-skill">Install (make it an active
 skill)</h2>
 <div class="sourceCode" id="cb1"><pre
