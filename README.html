@@ -162,9 +162,13 @@ Enterprise account)</h2>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. install Claude Code, then: /login   (into the new account)</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tar</span> xzf claude-backup-<span class="pp">*</span>.tar.gz <span class="at">-C</span> ~/</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> ~/restore-claude.sh <span class="at">--dry-run</span>        <span class="co"># preview</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> ~/restore-claude.sh                  <span class="co"># apply</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># then: /mcp to reconnect servers (OAuth re-auth — tokens are never backed up)</span></span></code></pre></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> ~/restore-claude.sh                  <span class="co"># PREVIEW by default — prints the plan, changes nothing</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> ~/restore-claude.sh <span class="at">--apply</span>          <span class="co"># execute (add --yes to accept all prompts)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># then: /mcp to reconnect servers (secrets are never backed up — OAuth or token re-auth)</span></span></code></pre></div>
+<p>Restore <strong>previews by default</strong>: it runs the
+<code>claude</code> CLI and settings changes only when you pass
+<code>--apply</code>, so you can read the full plan before anything
+mutates.</p>
 <h2 id="how-claude---resume-works-and-why-transcripts-are-opt-in">How
 <code>claude --resume</code> works (and why transcripts are opt-in)</h2>
 <p>Each Claude Code session is stored locally as a <code>.jsonl</code>

@@ -11,14 +11,22 @@
 #   - re-chmod restored hook/skill/tmux scripts
 #   - optionally restore ~/.claude.json wholesale  (DEFAULT OFF — see warning)
 #
-# Flags: --dry-run (change nothing) · --yes (accept defaults non-interactively)
+# PREVIEW BY DEFAULT: with no flags this prints the full plan and changes NOTHING.
+# You must pass --apply to actually execute (install plugins, merge settings, etc.).
+#
+# Flags:
+#   (none)     preview only — show the plan, change nothing  [default]
+#   --apply    execute the plan for real
+#   --dry-run  explicit preview (same as the default)
+#   --yes      accept all prompt defaults non-interactively (pair with --apply)
 
 set -uo pipefail
 
-DRY_RUN=0
+DRY_RUN=1          # safe by default — opt in to mutation with --apply
 NONINTERACTIVE=0
 for arg in "$@"; do
   case "$arg" in
+    --apply)   DRY_RUN=0 ;;
     --dry-run) DRY_RUN=1 ;;
     --yes|-y)  NONINTERACTIVE=1 ;;
     *) echo "Unknown flag: $arg" >&2; exit 2 ;;
@@ -56,6 +64,12 @@ CURRENT_CLAUDEJSON="$HOME/.claude.json"
 echo ""
 echo "🔁 Claude Config Restore (hardened)"
 echo "==================================="
+if [ "$DRY_RUN" -eq 1 ]; then
+  echo "👁  PREVIEW MODE — showing the plan, changing nothing."
+  echo "    Re-run with --apply to execute (add --yes to skip prompts)."
+else
+  echo "⚙️  APPLY MODE — changes will be made."
+fi
 echo ""
 
 # ── Marketplaces ──────────────────────────────────────────
@@ -140,10 +154,18 @@ if ask_yn "Re-apply executable bit on restored hooks / skills / tmux scripts?" Y
 fi
 
 echo ""
+if [ "$DRY_RUN" -eq 1 ]; then
+  echo "👁  PREVIEW complete — nothing was changed."
+  echo "    Reviewed the plan above? Execute it with:"
+  echo "      bash ~/restore-claude.sh --apply          # interactive"
+  echo "      bash ~/restore-claude.sh --apply --yes    # accept all defaults"
+  exit 0
+fi
+
 echo "✅ Restore steps complete."
 echo ""
 echo "Manual follow-ups:"
-echo "  - /mcp                 # reconnect each MCP server (OAuth)"
+echo "  - /mcp                 # reconnect each MCP server (OAuth or token)"
 echo "  - claude plugin list   # confirm plugins installed"
 echo "  - /setup-statusline    # if your statusline command was plugin-managed"
 echo "  - rm ~/sanitized-*.json ~/RESTORE.md ~/MANIFEST.txt ~/restore-claude.sh   # cleanup"

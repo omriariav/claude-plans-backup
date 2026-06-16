@@ -45,10 +45,13 @@ data and rarely needed on the new machine — see below.
 ```bash
 # 1. install Claude Code, then: /login   (into the new account)
 tar xzf claude-backup-*.tar.gz -C ~/
-bash ~/restore-claude.sh --dry-run        # preview
-bash ~/restore-claude.sh                  # apply
-# then: /mcp to reconnect servers (OAuth re-auth — tokens are never backed up)
+bash ~/restore-claude.sh                  # PREVIEW by default — prints the plan, changes nothing
+bash ~/restore-claude.sh --apply          # execute (add --yes to accept all prompts)
+# then: /mcp to reconnect servers (secrets are never backed up — OAuth or token re-auth)
 ```
+
+Restore **previews by default**: it runs the `claude` CLI and settings changes only
+when you pass `--apply`, so you can read the full plan before anything mutates.
 
 ## How `claude --resume` works (and why transcripts are opt-in)
 
