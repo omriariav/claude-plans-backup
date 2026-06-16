@@ -1,6 +1,6 @@
 ---
 name: claude-config-backup
-description: Back up OR restore the user's entire Claude Code config (~/.claude/ settings, skills, commands, agents, hooks, global CLAUDE.md, keybindings, tmux config, optional Codex/Cursor/MCP configs). Backup mode creates one timestamped tarball with a generated RESTORE.md checklist and double-layer credential stripping (key-name AND value-pattern redaction). Restore mode (run on the new machine) re-registers plugin marketplaces, reinstalls plugins, merges MCP server defs into the new account's settings.json, restores hooks/agents/CLAUDE.md to their original paths, and reloads tmux. Built for migrating between accounts (e.g. personal $200 Max -> managed Enterprise). Use when the user asks to "back up claude", "backup claude", "save claude setup", "export claude config", "claude backup", "migrate claude account", "claude config dump", "restore claude config", "restore claude backup", "import claude config", or runs /claude-config-backup.
+description: Back up OR restore the user's entire Claude Code config (~/.claude/ settings, skills, commands, agents, hooks, global CLAUDE.md, keybindings, tmux config, optional Codex/Cursor/MCP configs). Backup mode creates one timestamped tarball with a generated RESTORE.md checklist and double-layer credential stripping (key-name AND value-pattern redaction). Restore mode (run on the new machine) re-registers plugin marketplaces, reinstalls plugins, merges MCP server defs into the new account's settings.json, restores hooks/agents/CLAUDE.md to their original paths, and reloads tmux. Built for moving a setup to a new machine or rebuilding after a wipe/reinstall; also useful as a pre-switch snapshot when changing accounts (e.g. personal $200 Max -> managed Enterprise) on the same machine. Use when the user asks to "back up claude", "backup claude", "save claude setup", "export claude config", "claude backup", "migrate claude to a new machine", "migrate claude account", "claude config dump", "restore claude config", "restore claude backup", "import claude config", or runs /claude-config-backup.
 ---
 
 # claude-config-backup
@@ -9,6 +9,11 @@ One skill, two scripts. Back up on the old machine/account, restore on the new o
 Captures the easy-to-miss pieces (`CLAUDE.md`, `agents/`, `hooks/`), redacts secrets
 by both key name and value pattern, and keeps restore non-destructive — it previews
 first and leaves `~/.claude.json` alone unless you opt in.
+
+**When restore actually matters:** a new machine or a clean reinstall, where
+`~/.claude` is empty. On a *same-machine* account switch (`/login` only), the config
+dir survives untouched, so the backup is just a rollback snapshot — don't run restore;
+at most pull a single overwritten file (e.g. `settings.json`) from the tarball.
 
 ## Mode 1: Backup
 

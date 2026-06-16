@@ -97,10 +97,50 @@
 <h1 class="title">claude-plans-backup</h1>
 </header>
 <h1 id="claude-plans-backup">claude-plans-backup</h1>
-<p>A hardened Claude Code config backup/restore skill. Built to migrate
-a Claude Code setup between accounts/machines — e.g. a personal
-<strong>$200 Max</strong> plan → a managed <strong>Enterprise</strong>
-account — without losing customizations.</p>
+<p>A hardened Claude Code config backup/restore skill. Moves a Claude
+Code setup to a <strong>new machine</strong> (or rebuilds it after a
+wipe/reinstall) without losing your skills, plugins, MCP servers, hooks,
+agents, <code>CLAUDE.md</code>, and memory.</p>
+<h2 id="when-its-worth-running">When it's worth running</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>What survives on its own</th>
+<th>What this tool is for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>New machine / clean reinstall</strong></td>
+<td>nothing — <code>~/.claude</code> doesn't exist there yet</td>
+<td>the core use case: back up here, <strong>restore</strong> there to
+rebuild marketplaces, plugins, MCP, hooks, agents,
+<code>CLAUDE.md</code>, and memory</td>
+</tr>
+<tr>
+<td><strong>Same machine, account switch only</strong> (e.g. personal →
+Enterprise via <code>/login</code>)</td>
+<td>everything — <code>/login</code> swaps credentials but leaves
+<code>~/.claude</code> intact</td>
+<td>a <strong>rollback snapshot</strong> to take <em>before</em> you
+switch; you normally won't run restore at all</td>
+</tr>
+</tbody>
+</table>
+<p>Notes for the same-machine case:</p>
+<ul>
+<li>Your <code>--resume</code> history is preserved automatically — the
+transcripts never move.</li>
+<li>The switch is mostly just <code>/login</code> into the new account,
+then <code>/mcp</code> to re-auth OAuth servers (token-based MCP servers
+keep working — their token lives in <code>~/.claude.json</code>, which
+stays put).</li>
+<li>If the new account pushes <strong>managed settings</strong> that
+overwrite your <code>settings.json</code>, pull just that file out of
+the backup tarball — don't run the full restore (it would reinstall
+plugins that are already there).</li>
+</ul>
 <h2 id="how-it-works">How it works</h2>
 <ul>
 <li><strong>Captures the whole setup, including the easy-to-miss
