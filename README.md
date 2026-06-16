@@ -1,8 +1,25 @@
 # claude-plans-backup
 
-A hardened Claude Code config backup/restore skill. Built to migrate a Claude Code
-setup between accounts/machines — e.g. a personal **$200 Max** plan → a managed
-**Enterprise** account — without losing customizations.
+A hardened Claude Code config backup/restore skill. Moves a Claude Code setup to a
+**new machine** (or rebuilds it after a wipe/reinstall) without losing your skills,
+plugins, MCP servers, hooks, agents, `CLAUDE.md`, and memory.
+
+## When it's worth running
+
+| Scenario | What survives on its own | What this tool is for |
+|----------|--------------------------|-----------------------|
+| **New machine / clean reinstall** | nothing — `~/.claude` doesn't exist there yet | the core use case: back up here, **restore** there to rebuild marketplaces, plugins, MCP, hooks, agents, `CLAUDE.md`, and memory |
+| **Same machine, account switch only** (e.g. personal → Enterprise via `/login`) | everything — `/login` swaps credentials but leaves `~/.claude` intact | a **rollback snapshot** to take *before* you switch; you normally won't run restore at all |
+
+Notes for the same-machine case:
+
+- Your `--resume` history is preserved automatically — the transcripts never move.
+- The switch is mostly just `/login` into the new account, then `/mcp` to re-auth
+  OAuth servers (token-based MCP servers keep working — their token lives in
+  `~/.claude.json`, which stays put).
+- If the new account pushes **managed settings** that overwrite your `settings.json`,
+  pull just that file out of the backup tarball — don't run the full restore (it would
+  reinstall plugins that are already there).
 
 ## How it works
 
