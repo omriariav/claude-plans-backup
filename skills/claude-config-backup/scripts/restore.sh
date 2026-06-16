@@ -123,7 +123,8 @@ if [ -f "$CLAUDEJSON_SANITIZED" ]; then
   fi
 fi
 echo ""
-echo "⚠️  Run /mcp in Claude Code to authenticate each server — tokens were NOT restored."
+echo "⚠️  Run /mcp to reconnect each server — secrets were NOT restored."
+echo "    OAuth servers prompt to authorize; token-based servers (env vars) need the token re-entered."
 echo ""
 
 # ── tmux reload ───────────────────────────────────────────

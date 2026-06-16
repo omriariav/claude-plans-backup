@@ -221,7 +221,9 @@ fi
 
 cat >> "$RESTORE" <<'MCP_HEADER'
 ## MCP servers needing /mcp re-auth
-Run `/mcp` and reconnect each (OAuth prompts for Atlassian, Gmail, Slack, etc.):
+Run `/mcp` and reconnect each. OAuth servers (Atlassian, Gmail, Slack, …) prompt
+to authorize; token-based servers (env vars, e.g. an API/GMS token) need the value
+re-entered manually — it was stripped from the backup:
 
 MCP_HEADER
 {
@@ -322,6 +324,10 @@ fi
 tar czf "$OUT" \
   -C "$STAGING" "${STAGING_FILES[@]}" \
   -C "$HOME" "${HOME_OPERANDS[@]}"
+
+# The archive holds transcripts/memory (confidential). Keep it owner-only,
+# regardless of umask, so it isn't world-readable on a shared machine.
+chmod 600 "$OUT" 2>/dev/null || true
 
 SIZE=$(du -sh "$OUT" 2>/dev/null | awk '{print $1}')
 echo ""
