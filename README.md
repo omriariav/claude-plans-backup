@@ -13,7 +13,8 @@ It avoids the usual pitfalls of a naïve `tar` of `~/.claude`:
 | `~/.claude.json` restore | wholesale copy, default ON (clobbers new account identity) | **default OFF**, with warning |
 
 Also: `restore.sh` runs commands from explicit args (no `eval`), and the repo
-`.gitignore` blocks committing tarballs (which contain confidential transcripts).
+`.gitignore` blocks committing tarballs (which hold confidential config/memory, and
+transcripts if you opt in).
 
 ## Install (make it an active skill)
 
@@ -31,8 +32,13 @@ bash skills/claude-config-backup/scripts/backup.sh             # build tarball i
 # options: --yes (no prompts), --out DIR (write elsewhere)
 ```
 
-Produces `~/claude-backup-YYYY-MM-DD-HHMM.tar.gz` containing a sanitized config,
-`RESTORE.md`, `MANIFEST.txt`, and a bundled `restore-claude.sh`.
+Produces `~/claude-backup-YYYY-MM-DD-HHMM.tar.gz` (mode `0600`) containing a
+sanitized config, `RESTORE.md`, `MANIFEST.txt`, and a bundled `restore-claude.sh`.
+
+By default the archive includes your settings, skills, commands, agents, hooks,
+`CLAUDE.md`, and **auto-memory** — but **not conversation transcripts**, which are
+opt-in (the prompt defaults to *no*; `--yes` skips them). They are the bulk of the
+data and rarely needed on the new machine — see below.
 
 ## Restore (new machine / Enterprise account)
 
@@ -44,6 +50,37 @@ bash ~/restore-claude.sh                  # apply
 # then: /mcp to reconnect servers (OAuth re-auth — tokens are never backed up)
 ```
 
+## How `claude --resume` works (and why transcripts are opt-in)
+
+Each Claude Code session is stored locally as a `.jsonl` file (the full message +
+tool-call history) under:
+
+```
+~/.claude/projects/<encoded-cwd>/<session-uuid>.jsonl
+```
+
+The subdirectory name is your **working directory** with `/` and `.` replaced by `-`
+(e.g. `/Users/omri.a/Code/os-omri-pm` → `-Users-omri-a-Code-os-omri-pm`). `claude
+--resume` lists the sessions for your *current* directory's encoded folder and replays
+the chosen one back into a fresh session. It is **purely local and file-based** — no
+server or account state is involved.
+
+Two consequences for migration:
+
+1. **Resume is account-independent.** Switching plans/accounts (e.g. Max → Enterprise)
+   changes auth/billing, not your transcripts. On the same machine, resume works
+   regardless of which account you're logged into.
+2. **Resume is path-dependent.** It keys off the encoded working directory. On a new
+   machine, restored transcripts only surface under `--resume` if you stand in a
+   directory whose path matches the original (same username + same repo paths →
+   works). If paths differ, the `.jsonl` files restore fine but won't be listed —
+   the history isn't lost, just not one-click resumable (the files are plain JSON).
+
+**So transcripts are off by default:** they're large (often gigabytes), and resume
+continuity only pays off when the new machine keeps the same paths. Include them
+(answer *yes* at the prompt) when you want full `--resume` history *and* the target
+machine will use the same username and repo locations.
+
 ## What it never touches
 
 `~/.claude/.credentials.json`, token/secret values, `plugins/cache/`, and runtime
@@ -51,8 +88,9 @@ state (`sessions/`, `telemetry/`, `daemon/`, `file-history/`, `history.jsonl`).
 
 ## Security notes
 
-- The tarball holds transcripts + auto-memory = **confidential** content even after
-  sanitization. Keep it on managed storage, not personal cloud.
+- The tarball is written `0600` and holds auto-memory (and transcripts, if you opt
+  in) = **confidential** content even after sanitization. Keep it on managed storage,
+  not personal cloud.
 - Hook/skill scripts are archived verbatim, not scanned. Keep secrets in env/keychain,
   never hard-coded in a script.
 - An Enterprise account may push **managed settings**; restore only *merges mcpServers*

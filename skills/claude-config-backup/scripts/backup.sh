@@ -70,7 +70,7 @@ ITEMS=(
   "always|$HOME/.claude/settings.local.json|Local settings overrides"
   "always|$HOME/.tmux.conf|Tmux config"
   "always|$HOME/.tmux/scripts|Tmux custom scripts"
-  "default-on|$HOME/.claude/projects|Auto-memory + conversation transcripts"
+  "default-on|$HOME/.claude/projects|Auto-memory (default ON) + transcripts (opt-in)"
   "optional|$HOME/.codex/config.toml|Codex CLI config (MCP plugin defaults)"
   "optional|$HOME/.cursor/mcp.json|Cursor MCP server config"
   "optional|$HOME/.config/multi-sql-mcp/config.toml|multi-sql-mcp DB connections"
@@ -111,7 +111,7 @@ INCLUDE_PATHS=("${ALWAYS_PATHS[@]+"${ALWAYS_PATHS[@]}"}")
 for entry in "${DEFAULT_PATHS[@]+"${DEFAULT_PATHS[@]}"}"; do
   IFS=':' read -r path desc <<< "$entry"
   if [ "$path" = "$HOME/.claude/projects" ]; then
-    ask_yn "Include conversation transcripts (claude --resume history)?" Y && INCLUDE_TRANSCRIPTS=1 || INCLUDE_TRANSCRIPTS=0
+    ask_yn "Include conversation transcripts (claude --resume history — large, opt-in)?" N && INCLUDE_TRANSCRIPTS=1 || INCLUDE_TRANSCRIPTS=0
     ask_yn "Include auto-memory (persistent memory files)?" Y          && INCLUDE_MEMORY=1      || INCLUDE_MEMORY=0
     continue
   fi
