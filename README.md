@@ -69,7 +69,7 @@ tool-call history) under:
 ```
 
 The subdirectory name is your **working directory** with `/` and `.` replaced by `-`
-(e.g. `/Users/omri.a/Code/os-omri-pm` → `-Users-omri-a-Code-os-omri-pm`). `claude
+(e.g. `/home/foo/bar.baz` → `-home-foo-bar-baz`). `claude
 --resume` lists the sessions for your *current* directory's encoded folder and replays
 the chosen one back into a fresh session. It is **purely local and file-based** — no
 server or account state is involved.

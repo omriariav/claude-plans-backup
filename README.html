@@ -169,8 +169,7 @@ file (the full message + tool-call history) under:</p>
 <pre><code>~/.claude/projects/&lt;encoded-cwd&gt;/&lt;session-uuid&gt;.jsonl</code></pre>
 <p>The subdirectory name is your <strong>working directory</strong> with
 <code>/</code> and <code>.</code> replaced by <code>-</code> (e.g.
-<code>/Users/omri.a/Code/os-omri-pm</code> →
-<code>-Users-omri-a-Code-os-omri-pm</code>).
+<code>/home/foo/bar.baz</code> → <code>-home-foo-bar-baz</code>).
 <code>claude --resume</code> lists the sessions for your
 <em>current</em> directory's encoded folder and replays the chosen one
 back into a fresh session. It is <strong>purely local and
