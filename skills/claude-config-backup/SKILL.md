@@ -29,11 +29,13 @@ Flags: `--dry-run` (plan only, no tarball) · `--yes` (accept all defaults) ·
 After `tar xzf claude-backup-*.tar.gz -C ~/` on the new machine:
 
 ```bash
-bash ~/restore-claude.sh [--dry-run] [--yes]
+bash ~/restore-claude.sh           # PREVIEW by default — prints the plan, changes nothing
+bash ~/restore-claude.sh --apply   # execute the plan (add --yes for no prompts)
 ```
 
 (`restore-claude.sh` is unpacked to `$HOME` from the tarball, so the path exists
-immediately.) It:
+immediately.) **It previews by default** — the `claude` CLI / settings mutations
+run only when you pass `--apply`, so you can read the full plan first. It:
 
 1. Re-registers plugin marketplaces (`claude plugin marketplace add <url>`).
 2. Reinstalls plugins (`claude plugin install <name>`).
@@ -44,7 +46,8 @@ immediately.) It:
 
 `~/.claude.json` wholesale-restore is **default OFF** (see "Restore safety").
 
-Same flags: `--dry-run` / `--yes`.
+Flags: `--apply` (execute; default is preview) · `--dry-run` (explicit preview) ·
+`--yes` (accept all prompt defaults; pair with `--apply`).
 
 ## What gets backed up
 

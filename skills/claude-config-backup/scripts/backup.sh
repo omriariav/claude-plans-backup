@@ -196,7 +196,8 @@ tar xzf claude-backup-*.tar.gz -C ~/
 
 ## Step 3 — Run the restore helper (re-adds marketplaces, plugins, merges MCP)
 ```bash
-bash ~/restore-claude.sh        # add --dry-run first to preview
+bash ~/restore-claude.sh           # PREVIEW by default: shows the plan, changes nothing
+bash ~/restore-claude.sh --apply   # execute (add --yes to accept all prompts)
 ```
 
 ## Step 4 — settings.json
@@ -336,6 +337,6 @@ echo "  📁 $OUT"
 echo "  📏 $SIZE"
 echo ""
 echo "Restore on the new machine:"
-echo "  tar xzf $(basename "$OUT") -C ~/  &&  bash ~/restore-claude.sh --dry-run"
+echo "  tar xzf $(basename "$OUT") -C ~/  &&  bash ~/restore-claude.sh   # previews; add --apply to run"
 echo ""
 echo "💡 Contains transcripts/memory = confidential. Keep on managed storage, not personal cloud."
