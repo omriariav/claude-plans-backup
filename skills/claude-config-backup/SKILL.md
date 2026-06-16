@@ -1,6 +1,9 @@
 ---
 name: claude-config-backup
-description: Back up OR restore the user's entire Claude Code config (~/.claude/ settings, skills, commands, agents, hooks, global CLAUDE.md, keybindings, tmux config, optional Codex/Cursor/MCP configs). Backup mode creates one timestamped tarball with a generated RESTORE.md checklist and double-layer credential stripping (key-name AND value-pattern redaction). Restore mode (run on the new machine) re-registers plugin marketplaces, reinstalls plugins, merges MCP server defs into the new account's settings.json, restores hooks/agents/CLAUDE.md to their original paths, and reloads tmux. Built for moving a setup to a new machine or rebuilding after a wipe/reinstall; also useful as a pre-switch snapshot when changing accounts (e.g. personal $200 Max -> managed Enterprise) on the same machine. Use when the user asks to "back up claude", "backup claude", "save claude setup", "export claude config", "claude backup", "migrate claude to a new machine", "migrate claude account", "claude config dump", "restore claude config", "restore claude backup", "import claude config", or runs /claude-config-backup.
+description: Back up OR restore the user's entire Claude Code config (~/.claude/ settings, skills, commands, agents, hooks, global CLAUDE.md, keybindings, tmux config, optional Codex/Cursor/MCP configs). Backup mode creates one timestamped tarball with a generated RESTORE.md checklist and double-layer credential stripping (key-name AND value-pattern redaction). Restore mode (run on the new machine) re-registers plugin marketplaces, reinstalls plugins, merges MCP server defs into the new account's settings.json, restores hooks/agents/CLAUDE.md to their original paths, and reloads tmux. Built for moving a setup to a new machine or rebuilding after a wipe/reinstall; also useful as a pre-switch snapshot when changing accounts (e.g. personal $200 Max -> managed Enterprise) on the same machine. Use when the user asks to "back up claude", "backup claude", "save claude setup", "export claude config", "claude backup", "migrate claude to a new machine", "migrate claude account", "claude config dump", "restore claude config", "restore claude backup", "import claude config", or runs /claude-config-backup. Not for syncing two live machines, backing up project repositories or worktrees (clone those separately), or preserving credentials/tokens (those re-auth via /login and /mcp).
+allowed-tools: Bash(bash:*), Read
+user-invocable: true
+argument-hint: backup | restore (restore previews; pass --apply to execute)
 ---
 
 # claude-config-backup
@@ -101,6 +104,34 @@ Both passes run recursively over `settings.json` and `~/.claude.json`.
   before writing.
 - Tokens are never restored — every OAuth MCP server (Atlassian, Gmail, Slack, etc.)
   must be reconnected via `/mcp`.
+
+## Gotchas
+
+Real failure modes worth knowing before you trust a run:
+
+- **Symlinked paths are archived as links, not contents.** If `~/.tmux.conf` (or any
+  backed-up path) is a symlink into e.g. a dotfiles repo, it restores as a *dangling*
+  link on a machine that lacks the target. Clone those sources separately; the backup
+  won't reconstruct them.
+- **Token-based MCP servers don't come back on their own.** OAuth servers re-auth via
+  `/mcp`, but servers whose secret is an env var (e.g. an API/GMS token) had that value
+  stripped, and servers defined only in `~/.claude.json` aren't restored unless you opt
+  into the wholesale `.claude.json` restore. RESTORE.md lists *every* server by name so
+  you know what to reconnect — but token servers need the value re-entered by hand.
+- **Hook/skill scripts are archived verbatim, not scanned.** A secret hard-coded in a
+  script travels in the tarball. Keep secrets in env/keychain, not in scripts.
+- **Same-machine account switch ≠ restore.** `/login` leaves `~/.claude` intact, so
+  running restore there is pointless (it reinstalls already-present plugins). Use the
+  backup only as a rollback snapshot in that case.
+- **Resume is path-keyed.** Restored transcripts only surface under `claude --resume`
+  when the new machine's working-directory paths match the originals.
+
+## Reporting back
+
+After a **backup**, tell the user the tarball path and size, what was included, and
+what was excluded (e.g. transcripts off by default), and to copy it to managed storage.
+After a **restore preview**, summarize the plan (marketplaces, plugins, MCP merge) and
+remind them it changed nothing until they pass `--apply`.
 
 ## Notes for Claude
 
